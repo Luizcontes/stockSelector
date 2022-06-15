@@ -1,9 +1,7 @@
-import secrets
 import pandas as pd
 import requests
 import portfolio as pt
 from requests.exceptions import ConnectionError
-from gsheets.secrets import IEX_CLOUD_API_TOKEN as token
 
 """ 
     #   BIBLIOTECA PARA BUSCAR DADOS DA BOLSA
@@ -70,7 +68,7 @@ def popular_tabela(symbol_string):
 """ Funcao que busca os dados relativos ao pedaco da lista contendo alguns
     papeis, passada como argumento em formato de string """
 def buscar_dado(symbol_string):
-    batch_api_call_url = f'https://sandbox.iexapis.com/stable/stock/market/batch?symbols={symbol_string}&types=quote&token={token}'
+    batch_api_call_url = f'https://sandbox.iexapis.com/stable/stock/market/batch?symbols={symbol_string}&types=quote&token={IEX_CLOUD_API_TOKEN}'
     try:
         data = requests.get(batch_api_call_url)
     except ConnectionError:

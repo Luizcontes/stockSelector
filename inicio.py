@@ -1,8 +1,10 @@
 import math
 import os
+from turtle import clear
 import dados_bolsa as sp500
 import portfolio as pt
 import output as out
+import indexes_list as ind
 
 """ #   INICIAR
     #   
@@ -13,10 +15,9 @@ import output as out
 
 """ metodo criado para verificar se o valor inserido pelo utilizador
 e um numero float """
-def isValidNumber(num):
+def isFloat(num):
     try:
-        global portfolio_size
-        portfolio_size = float(num)
+        num = float(num)
         return True
     except ValueError:
         return False
@@ -37,7 +38,7 @@ def adicionar_acoes_qtd(tam_posicao):
 
 """ metodo criado para chamar a biblioteca que obtem a cotacao das acoes
 e construir uma tabela com estes dados """
-def gerar_portfolio(port):
+def gerar_portfolio(port, opcoes):
     global quantidade_acoes
     global tamanho_posicao
     quantidade_acoes = sp500.ler_qtd_papeis()
@@ -53,14 +54,16 @@ def imprimir_informacoes():
 
 """ Metodo criado para exibir opcoes ao utilizador e fazer chamada as
 bibliotecas para a correta execucao do script """
-def iniciar():
+def iniciar(opcoes):
     while True:
-        portfolio_size = input('Enter the value of your portfolio: ')
-        if(isValidNumber(portfolio_size)):
+        global portfolio_size
+        portfolio_size = input('\nInsira o valor a investir para cada indice: ')
+        if(isFloat(portfolio_size)):
+            portfolio_size = float(portfolio_size)
             break
         else:
             print('Favor inserir um numero valido')
-    gerar_portfolio(portfolio_size)
+    gerar_portfolio(portfolio_size, opcoes)
     imprimir_informacoes()
     print("Portfolio gerado com sucesso...\n")
     x = ''
@@ -77,6 +80,63 @@ def iniciar():
             os.system('clear')
             print("Entre a opcao correta...")
             x = 'a'
-iniciar()
+
+def isValidOption(option):
+    if (option <= indList.getIndexesSize()):
+        return True
+    else:
+        return False
+
+def createOptionsTuple(optionsString):
+    tmp = ''
+    optionsArray = []
+    for option in optionsString:
+        if (not option.isspace()):
+            tmp += option
+        else:
+            if (tmp.isdecimal()):
+                if(isValidOption(int(tmp))):
+                    optionsArray.append(int(tmp))
+                    tmp = ''
+                else:
+                    break
+            else:
+                break
+    if (tmp.isdecimal() and isValidOption(int(tmp))):
+        # if(isValidOption(int(tmp))):
+        optionsArray.append(int(tmp))
+        optionsTuple = tuple(optionsArray)
+        return optionsTuple
+    else:
+        print("Por favor insirar uma opcao correta...")
+        x = input()
+        os.system('clear')
+
+def iniciar2():
+    print("\nEscolha quais indices gostaria de utilizar para elaborar")
+    print("a sua estrategia de investimento (separados por espaco)")
+    print("Ex: 5 9 23")
+    optionsString = input()
+    optionsTuple = createOptionsTuple(optionsString)
+    return optionsTuple
+    
+def main():
+    while True:
+        print("\t*****StOcK sElEcToR*****\n")
+        indList.printIndexesList()
+        opcoes = iniciar2()
+        os.system('clear')
+        print("\nIndices escolhidos para elaborar estrategia:")
+        indList.printOption(opcoes)
+        iniciar(opcoes)
+"""         optionDic = {}
+        for opcao in opcoes:
+            optionDic[opcao] = indList.index_array[opcao-1]
+        print(optionDic) """
+
+# iniciar()
+indList = ind.IndexesList()
+main()
+
 
 
