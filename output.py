@@ -1,6 +1,5 @@
 import xlsxwriter
 import pandas as pd
-import portfolio as pt
 
 """ #   BIBLIOTECA PARA EXPORTAR PARA EXCEL
     #
@@ -9,10 +8,12 @@ import portfolio as pt
 """
 class DocWriter:
 
-    def __init__(self, file='portfolio.xlsx', background_color='#C6C7EF', color='#000000'):
-        self.file = 'file/' + file
+    def __init__(self, finalDF, index, background_color='#C6C7EF', color='#000000'):
+        self.index = index
+        self.file = self.filePathGenerator()
         self.writer = pd.ExcelWriter(self.file, engine='xlsxwriter')
-        pt.finalDF.to_excel(self.writer, 'Portfolio', index=False)
+        self.finalDF = finalDF
+        self.finalDF.to_excel(self.writer, 'Portfolio', index=False)
         self.string = self.writer.book.add_format(
             {
                 'font_color': color,
@@ -54,7 +55,7 @@ class DocWriter:
     a largura do texto que preenche o cabecalho """
     def ajustar_linha(self, a):
         
-        column_width = max(pt.finalDF[a].astype(str).map(len).max(), len(a))
+        column_width = max(self.finalDF[a].astype(str).map(len).max(), len(a))
         return column_width
 
     """ metodo criado para aplicar toda a formatacao necessaria para
@@ -66,3 +67,7 @@ class DocWriter:
         sheet = self.writer.sheets['Portfolio'].set_column('D:D', self.ajustar_linha('Shares'), self.integer)
         """ print(pt.finalDF.iloc[0,1]) """
         self.writer.save()
+    
+    def filePathGenerator(self):
+        index = str(self.index).replace('/', '-')
+        return f'file/{index}.xlsx'
